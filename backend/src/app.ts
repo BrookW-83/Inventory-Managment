@@ -1,34 +1,28 @@
 import express from 'express';
-import morgan from 'morgan';
-import helmet from 'helmet';
-import cors from 'cors';
-
-import * as middlewares from './middleware/middlewares';
-import MessageResponse from './interfaces/MessageResponse';
-import addToStockRoute from './routes/addToStockRoute';
-import creatShelfRoute from './routes/createShelfRoute'
 
 
+import pg from 'pg';
+import itemsRoute from './routes/itemsRoute';
+import shelfRoute from './routes/shelfRoute';
 
 require('dotenv').config();
 
+const { Pool } = pg;
+
+const pool = new Pool({
+  connectionString: process.env.POSTGRES_URL,
+})
+
+
+
 const app = express();
 
-app.use(morgan('dev'));
-app.use(helmet());
-app.use(cors());
 app.use(express.json());
 
-// app.get<{}, MessageResponse>('/', (req, res) => {
-//   res.json({
-//     message: '🦄🌈✨👋🌎🌍🌏✨🌈🦄',
-//   });
-// });
+app.use('/routes/auth')
+app.use('/routes/items', itemsRoute);
+app.use('/routes/shelves', shelfRoute)
 
-// app.use('/api/v1', api);
-app.use('/api', addToStockRoute)
-app.use('/api', creatShelfRoute)
-app.use(middlewares.notFound);
-app.use(middlewares.errorHandler);
+
 
 export default app;
